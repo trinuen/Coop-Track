@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Track applications on UTSC Co-op portal",
+  "version": "1.0",
+  "icons": {
+    "128": "images/image.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://ascoop-uoft-coop-csm.symplicity.com/students/app/jobs/detail/*"
+      ],
+      "js": [
+        "./content.js"
+      ]
+    }
+  ]
+}
