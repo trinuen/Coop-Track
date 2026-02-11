@@ -2,8 +2,8 @@ document.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
 
-  if (btn.textContent.trim() === "Yes") {
-    console.log("Yes button clicked!");
+  if (btn.textContent.trim().toLowerCase() === "yes" || btn.textContent.trim().toLowerCase() === "submit") {
+    console.log("Yes/Submit button clicked!");
     const observer = new MutationObserver(() => {
       console.log("Mutation detected, checking for elements...");
 
@@ -19,29 +19,6 @@ document.addEventListener("click", (e) => {
 
       // Get all form field values
       const formNodeFields = document.querySelectorAll('form-static .field-widget span span');
-
-      // FOR DEBUGGING: Log what we found to understand the structure better
-      // console.log("Found elements:", {
-      //   companyName: !!companyName,
-      //   position: !!position,
-      //   type: !!type,
-      //   workLocation: !!workLocation,
-      //   formFieldsCount: formFields.length
-      // });
-
-      // if (companyName) console.log("Company:", companyName.textContent.trim());
-      // if (position) console.log("Position:", position.textContent.trim());
-      // if (type) console.log("Type:", type.textContent.trim());
-      // if (workLocation) console.log("Location:", workLocation.textContent.trim());
-
-      // Log all form fields to see what we're getting
-      // if (formFields.length > 0) {
-      //   console.log("Form fields:", Array.from(formFields).map(f => f.textContent.trim()));
-      // }
-
-      // if (formTextFields.length > 0) {
-      //   console.log("Form text fields:", Array.from(formTextFields).map(f => f.textContent.trim()));
-      // }
 
       if (companyName && position && workLocation && formNodeFields.length >= 5 && formTextFields.length >= 5) {
         observer.disconnect();
@@ -59,20 +36,6 @@ document.addEventListener("click", (e) => {
             break;
           }
         }
-        //For debugging
-        const jobDataTest = {
-          company: companyName.textContent.trim(),
-          position: position.textContent.trim(),
-          type: type,
-          workTerm: workTerm,
-          duration: duration,
-          location: workLocation.textContent.trim(),
-          url: window.location.href,
-          status: "Applied",
-          applicationDate: new Date().toISOString().split('T')[0],
-          allFormNodeFields: Array.from(formNodeFields).map(f => f.textContent.trim()),
-          allFormTextFields: Array.from(formTextFields).map(f => f.textContent.trim())
-        };
         //For implementation
         const jobData = {
           company: companyName.textContent.trim(),
@@ -87,6 +50,7 @@ document.addEventListener("click", (e) => {
         };
 
         console.log("Final job data:", jobData);
+        chrome.runtime.sendMessage({ type: "CREATE_SHEET", data: jobData });
       }
     });
 

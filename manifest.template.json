@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Track applications on UTSC Co-op portal",
+  "version": "1.0",
+  "permissions": [
+    "identity",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://sheets.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "./background.js"
+  },
+  "icons": {
+    "128": "images/image.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://ascoop-uoft-coop-csm.symplicity.com/students/app/jobs/detail/*",
+        "https://ascoop-uoft-coop-csm.symplicity.com/students/app/jobs/search*"
+      ],
+      "js": [
+        "./content.js"
+      ]
+    }
+  ],
+  "oauth2": {
+    "client_id": "YOUR_CLIENT_ID_HERE",
+    "scopes": [
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive.file"
+    ]
+  }
+}
