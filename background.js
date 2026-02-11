@@ -115,9 +115,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
                     cell: {
                       userEnteredFormat: {
                         backgroundColor: {
-                          red: 0.5,    // Gray background
-                          green: 0.5,
-                          blue: 0.5
+                          red: 0.7,    // Gray background
+                          green: 0.7,
+                          blue: 0.7
                         },
                         textFormat: {
                           foregroundColor: {
@@ -142,7 +142,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
 
       // Append data to the sheet
-      await fetch(
+      const appendRes = await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A1:append?valueInputOption=RAW`,
         {
           method: "POST",
@@ -151,10 +151,79 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            values: [[jobData.company, jobData.position, jobData.type, jobData.workTerm, jobData.duration, jobData.location, jobData.url, jobData.status, jobData.applicationDate]]
+            values: [[
+              jobData.company,
+              jobData.position,
+              jobData.type,
+              jobData.workTerm,
+              jobData.duration,
+              jobData.location,
+              jobData.url,
+              jobData.status,
+              jobData.applicationDate
+            ]]
           })
         }
       );
+
+      if (!appendRes.ok) {
+        const errorData = await appendRes.json();
+        console.error("Failed to append data:", errorData);
+        sendResponse({ success: false, error: "Failed to append data" });
+        return;
+      }
+
+      const appendResult = await appendRes.json();
+      console.log("Data appended to sheet!");
+
+      // Extract the row number that was just appended
+      const updatedRange = appendResult.updates.updatedRange; // e.g., "Sheet1!A5:I5"
+      const rowMatch = updatedRange.match(/!A(\d+)/);
+      const newRowNumber = rowMatch ? parseInt(rowMatch[1]) : null;
+
+      if (newRowNumber) {
+        // Apply dropdown only to the Status cell in the new row
+        await fetch(
+          `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              requests: [
+                {
+                  setDataValidation: {
+                    range: {
+                      sheetId: 0,
+                      startRowIndex: newRowNumber - 1, // Convert to 0-indexed
+                      endRowIndex: newRowNumber,
+                      startColumnIndex: 7, // Status column (H)
+                      endColumnIndex: 8
+                    },
+                    rule: {
+                      condition: {
+                        type: "ONE_OF_LIST",
+                        values: [
+                          { userEnteredValue: "Applied" },
+                          { userEnteredValue: "Interview" },
+                          { userEnteredValue: "Offer" },
+                          { userEnteredValue: "Rejected" },
+                          { userEnteredValue: "Accepted" }
+                        ]
+                      },
+                      showCustomUi: true,
+                      strict: true
+                    }
+                  }
+                }
+              ]
+            })
+          }
+        );
+        console.log(`Dropdown added to row ${newRowNumber}`);
+      }
 
       console.log("Data appended to sheet!");
 
