@@ -22,7 +22,7 @@
         "https://ascoop-uoft-coop-csm.symplicity.com/students/app/jobs/search*"
       ],
       "js": [
-        "./content.js"
+        "./dist/content.js"
       ]
     }
   ],
