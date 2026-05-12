@@ -9,4 +9,4 @@ and writes it to your personal Google Sheet.
 - The only data stored locally is your Google Sheet ID, used to append 
   future applications to the same sheet
 
-For questions, contact: [tous0905@gmail.com]
+For questions, contact: tous0905@gmail.com
