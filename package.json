@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/trinuen/Coop-Track#readme",
   "devDependencies": {
-    "@types/chrome": "^0.1.37",
+    "@types/chrome": "^0.1.42",
     "typescript": "^5.9.3"
   }
 }

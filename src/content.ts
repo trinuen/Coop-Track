@@ -5,10 +5,10 @@ document.addEventListener("click", (e: MouseEvent) => {
   const btnText = btn.textContent?.trim().toLowerCase();
   if (btnText !== "yes" && btnText !== "submit") return;
 
-  console.log("Yes/Submit button clicked!");
+  // console.log("Yes/Submit button clicked!");
 
   const observer = new MutationObserver(() => {
-    console.log("Mutation detected, checking for elements...");
+    // console.log("Mutation detected, checking for elements...");
 
     const companyName: Element | null =
       document.querySelector(".header-info a") ||
@@ -61,7 +61,7 @@ document.addEventListener("click", (e: MouseEvent) => {
         applicationDate: new Date().toISOString().split("T")[0],
       };
 
-      console.log("Final job data:", jobData);
+      // console.log("Final job data:", jobData);
 
       const message: CreateSheetMessage = { type: "CREATE_SHEET", data: jobData };
       chrome.runtime.sendMessage(message);
@@ -69,5 +69,5 @@ document.addEventListener("click", (e: MouseEvent) => {
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
-  console.log("Observer started");
+  // console.log("Observer started");
 });

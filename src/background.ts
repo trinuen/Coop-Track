@@ -20,14 +20,20 @@ chrome.runtime.onMessage.addListener(
         if (sheetId) {
           try {
             const checkRes = await fetch(
-              `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`,
+              `https://www.googleapis.com/drive/v3/files/${sheetId}?fields=trashed`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
             if (!checkRes.ok) {
               console.log("Stored sheet not found, creating new one");
               sheetId = undefined;
             } else {
-              console.log("Using existing sheet:", sheetId);
+              const fileData = await checkRes.json();
+              if (fileData.trashed) {
+                console.log("Stored sheet is in trash, creating new one");
+                sheetId = undefined;
+              } else {
+                console.log("Using existing sheet:", sheetId);
+              }
             }
           } catch {
             console.log("Error checking sheet, will create new one");
@@ -44,7 +50,7 @@ chrome.runtime.onMessage.addListener(
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ properties: { title: "Coop-Track Data" } }),
+              body: JSON.stringify({ properties: { title: "Coop-Track Applications" } }),
             }
           );
 
